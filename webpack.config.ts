@@ -6,6 +6,7 @@ import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import Preprocess from "svelte-preprocess";
 import webpack from "webpack";
 import WebpackDevServer from "webpack-dev-server";
+import CopyPlugin from "copy-webpack-plugin";
 
 const mode = process.env.NODE_ENV ?? "development";
 const prod = mode === "production";
@@ -43,6 +44,8 @@ const config: webpack.Configuration & WebpackDevServer.Configuration = {
       // Note: Paths in the `stylesheets` variable will be added here automatically
       "./src/main.ts",
     ],
+    content: path.join(__dirname, "src/scripts/content.ts"),
+    background: path.join(__dirname, "src/scripts/background.ts"),
   },
   resolve: {
     alias: {
@@ -53,7 +56,6 @@ const config: webpack.Configuration & WebpackDevServer.Configuration = {
     mainFields: ["svelte", "browser", "module", "main"],
   },
   output: {
-    publicPath: "dist",
     path: __dirname + "/dist",
     filename: "[name].js",
     chunkFilename: "[name].[id].js",
@@ -132,6 +134,9 @@ const config: webpack.Configuration & WebpackDevServer.Configuration = {
   plugins: [
     new MiniCssExtractPlugin({
       filename: "[name].css",
+    }),
+    new CopyPlugin({
+      patterns: [{ from: "public", to: "." }],
     }),
   ],
   optimization: {
